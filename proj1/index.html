@@ -38,7 +38,21 @@
 
 <h3 align="middle">Part 1: Rasterizing single-color triangles</h3>
 
-<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+<p>
+Our rasterization algorithm uses a helper function <p style="font-family:'Courier New'">inside_triangle</p> that determines if a point is inside a specified triangle. Its implementation uses cross product to determine which side the point is on for each side of the triangle. To avoid handedness issues and to ensure points on the edge are also considered inside the triangle, a point is considered inside if all three cross products are either nonnegative, or nonpositive.
+
+We then compute the minimum and maximum x and y coordinates of each of the triangle vertices in order to compute the bounding box of the triangle. We make no optimizations beyond this and simply iterate through all coordinates in the bounding box checking whether they are inside the triangle or not. In the basic implementation, <p style="font-family:'Courier New'">fill_pixel</p> is called if the center of the pixel is within the triangle, and nothing is done otherwise.</p>
+
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="images/image1.png" align="middle" width="400px"/>
+        <figcaption align="middle">Task 1 <em>basic/test4.svg</em>.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
 
 <div align="middle">
   <table style="width=100%">
