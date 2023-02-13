@@ -86,8 +86,50 @@
 
 <h3 align="middle">Part 4: Barycentric coordinates</h3>
 
+<div align="middle">
+    <img src="images/Barycentric Interpolation Example.png" align="middle" width="400px"/>
+    <figcaption align="middle">Barycentric interpolation of colors.</figcaption>
+</div>
+
+<p>Barycentric coordinates express any point as the weighted average of the vertices of a polygon (or polyhedron in multiple dimensions) which allows two dimensional interpolation with three points. Furthermore, the interpolation is also linear, because the line connecting any two points is colored with a linear gradient. This is useful for both color and texture interpolation of the triangle interior.</p>
+
+<div align="middle">
+    <img src="images/Task 4.png" align="middle" width="400px"/>
+    <figcaption align="middle">Barycentric interpolation <em>basic/test7.svg</em>.</figcaption>
+</div>
+
 
 <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
+
+<p>Pixel sampling is a way of obtaining or approximating the desired texture for intermediate pixels. Both nearest and bilinear start with barycentric interpolation of the texel coordinates of the vertices to obtain the appropriate texel coordinates of the desired pixel. Nearest pixel sampling rounds the texel coordinates to the nearest integer and matches the texture at those integer coordinates. In contrast, bilinear pixel sampling takes the texture values at the vertices of the unit square containing the pixel coordinates and makes a linear interpolation in the u and v directions (texel coordinates). This allows a smoother gradient for "large" pixels, i.e. pixels containing many texel lattices.</p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="images/Task 5 Nearest Rate 1.png" align="middle" width="400px"/>
+                <figcaption align="middle">Nearest pixel sampling rate 1 <em>texmap/test5.svg</em>.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 5 Nearest Rate 16.png" align="middle" width="400px"/>
+                <figcaption align="middle">Nearest pixel sampling rate 16 <em>texmap/test5.svg</em>.</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="images/Task 5 Bilinear Rate 1.png" align="middle" width="400px"/>
+                <figcaption align="middle">Bilinear pixel sampling rate 1 <em>texmap/test5.svg</em>.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 5 Bilinear Rate 16.png" align="middle" width="400px"/>
+                <figcaption align="middle">Bilinear pixel sampling rate 16 <em>texmap/test5.svg</em>.</figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<p>As seen above, bilinear texture sampling already nearly approximates rate 16 antialiasing of nearest pixel. Bilinear interpolation visually outperforms nearest neighbor when few texture pixels correspond to many pixels, i.e. when texels are stretched across an obtuse triangle. Nearest pixel will show a significant dropoff between texture lattice points, while bilinear interpolation will produce a smooth linear gradient.</p>
 
 
 <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
@@ -99,31 +141,6 @@
 
 <h3 align="middle">Part 7: Draw something interesting!</h3>
 
-<div align="middle">
-  <table style="width=100%">
-    <tr>
-      <td>
-        <img src="images/image1.png" align="middle" width="400px"/>
-        <figcaption align="middle">Image 1.</figcaption>
-      </td>
-      <td>
-        <img src="images/image2.png" align="middle" width="400px"/>
-        <figcaption align="middle">Image 2.</figcaption>
-      </td>
-    </tr>
-    <br>
-    <tr>
-      <td>
-        <img src="images/image3.png" align="middle" width="400px"/>
-        <figcaption align="middle">Image 3.</figcaption>
-      </td>
-      <td>
-        <img src="images/image4.png" align="middle" width="400px"/>
-        <figcaption align="middle">Image 4.</figcaption>
-      </td>
-    </tr>
-  </table>
-</div>
 
 </body>
 </html>
