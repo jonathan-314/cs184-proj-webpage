@@ -134,7 +134,7 @@
 
 <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
 
-
+<p>Level sampling allows us to compute pixel sampling faster and allow for more antialiasing. Instead of going pixel by pixel, level sampling may in some cases jump by many pixels at once (by taking the average which has been precomputed). This allows us to render the images faster. Increasing the number of samples per pixel decreases speed, increases memory usage, and increases antialiasing power since we sample a lot more. Level sampling, on the other hand, is the opposite: as the level number increases, the image becomes blurrier, so it is faster, uses less memory, but also has decreased antialising power. Finally, pixel sampling nearest is slightly faster than bilinear but also is susceptible to aliases. </p>
 
 <h2 align="middle">Section III: Art Competition</h2>
 <p>If you are not participating in the optional art competition, don't worry about this section!</p>
