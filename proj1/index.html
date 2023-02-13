@@ -25,7 +25,7 @@
 
 <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2018</h1>
 <h1 align="middle">Project 1: Rasterizer</h1>
-<h2 align="middle">Jonathan Guo, Wentinn Liao, CS184-??</h2>
+<h2 align="middle">Jonathan Guo, Wentinn Liao, CS184-wl</h2>
 
 <br><br>
 
@@ -33,6 +33,8 @@
 
 <h2 align="middle">Overview</h2>
 <p>In this project, we implemented a basic rasterizer with efficient solutions to aliasing artifacts for jaggies and texture mapping. It was interesting to see how simple optimizations with algorithms and data structures can greatly improve the visual quality of triangle rasterization.</p>
+
+
 
 <h2 align="middle">Section I: Rasterization</h2>
 
@@ -44,12 +46,36 @@
 
 <div align="middle">
     <img src="images/Task 1.png" align="middle" width="400px"/>
-    <figcaption align="middle">Task 1 <em>basic/test4.svg</em>.</figcaption>
+    <figcaption align="middle">Default <em>basic/test4.svg</em>.</figcaption>
 </div>
 
 
 <h3 align="middle">Part 2: Antialiasing triangles</h3>
 
+<p>Our supersampling algorithm modifies the basic rasterization algorithm and makes use of the <strong>sample_buffer</strong> variable, but no others. The amount of space allocated is modified for each pixel to have a number of colors equal to the sample rate, stored consecutively. To compute the dimensions of the supersample (n), we call <strong>std::sqrt</strong>, then calculate the increment between supersamples by 1 / n, then iterate through the centers of the supersample pixels accordingly. Supersampled pixels behave like normal pixels in that we write their color to the sample buffer and only modify <strong>rasterize_buffer</strong>.</p>
+
+<p>The modification to <strong>rasterize_buffer</strong> simply involves averaging all the color values of the supersampled pixels. This can be done by keeping a running sum of all color values, then dividing by the sample rate at the end. Because of this modification, we also need to adjust <strong>fill_pixel</strong> which is used to rasterize points, since the old implementation now only fills one supersampled pixel. The fix is to iterate through all supersampled pixels corresponding to the one pixel and filling in the same color accordingly.</p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="images/Task 2 Rate 1.png" align="middle" width="300px"/>
+                <figcaption align="middle">Supersampling rate 1 <em>basic/test4.svg</em>.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 2 Rate 4.png" align="middle" width="300px"/>
+                <figcaption align="middle">Supersampling rate 4 <em>basic/test4.svg</em>.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 2 Rate 16.png" align="middle" width="300px"/>
+                <figcaption align="middle">Supersampling rate 16 <em>basic/test4.svg</em>.</figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<p>We can see that there is a great disconnection on the left when the sampling rate is 1, while 4 is blurred and 16 is more finely blurred. This small scale effect is due to the fact that not all supersamples of a pixel lie inside the triangle and the color assigned to the pixel now depends on the fraction of supersamples that lie in the triangle. On a large scale, this visually reduces aliasing artifacts. We do not see the blur from far away because at a single point, our retina sees an average of light reflecting from a small local region so a uniform blurred color achieves the same effect as would many smaller pixels without supersampling.</p>
 
 
 <h3 align="middle">Part 3: Transforms</h3>
