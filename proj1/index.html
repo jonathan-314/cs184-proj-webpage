@@ -80,7 +80,12 @@
 
 <h3 align="middle">Part 3: Transforms</h3>
 
+<div align="middle">
+    <img src="images/Task 3 Robot Wave.png" align="middle" width="400px"/>
+    <figcaption align="middle">Robot Waving. </figcaption>
+</div>
 
+<p>Here we tried making our robot wave. This was achieved by rotating the robot's head as well as the robot's arm by various degrees. However, with the rotation of the head/arm, we also had to translate those back to their original position as the rotation took them out of position. 
 
 <h2 align="middle">Section II: Sampling</h2>
 
@@ -134,7 +139,35 @@
 
 <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
 
+<p>Level sampling allows us to compute pixel sampling faster and allow for more antialiasing. Instead of going pixel by pixel, level sampling may in some cases jump by many pixels at once (by taking the average which has been precomputed). This allows us to render the images faster. Increasing the number of samples per pixel decreases speed, increases memory usage, and increases antialiasing power since we sample a lot more. Level sampling, on the other hand, is the opposite: as the level number increases, the image becomes blurrier, so it is faster, uses less memory, but also has decreased antialising power. Finally, pixel sampling nearest is slightly faster than bilinear but also is susceptible to aliases. </p>
 
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="images/Task 6 L0PN.png" align="middle" width="400px"/>
+                <figcaption align="middle">Level 0, Nearest Pixel <em>./test6.svg</em>.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 6 L0PB.png" align="middle" width="400px"/>
+                <figcaption align="middle">Level 0, Bilinear Pixel <em>./test6.svg</em>.</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="images/Task 6 LBPN.png" align="middle" width="400px"/>
+                <figcaption align="middle">Bilinear Level, Nearest Pixel <em>./test6.svg</em>.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 6 LBPB.png" align="middle" width="400px"/>
+                <figcaption align="middle">Bilinear Level, Bilinear Pixel <em>./test6.svg</em>.</figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<p>Above show the effects of the various pixel and level sampling methods. As seen above, bilinear pixel causes the image to become more blurred, similar to bilinear levels. However, the bilinear level has a way larger effect than the bilinear pixel. This is because the bilinear pixel is only affected by its neighboring pixels, while the bilinear level could cause each pixel to be affected by pixels dozens of pixels away. </p>
 
 <h2 align="middle">Section III: Art Competition</h2>
 <p>If you are not participating in the optional art competition, don't worry about this section!</p>
