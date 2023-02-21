@@ -108,12 +108,24 @@
 
 <h3 align="middle">Part 4: Edge Flip</h3>
 
-<div align="middle">
-    <img src="images/Barycentric Interpolation Example.png" align="middle" width="400px"/>
-    <figcaption align="middle">Barycentric interpolation of colors.</figcaption>
-</div>
+<p>To implement Edge Flip, first we gathered all of the faces, vertices, and half edges necessary. Then, we set the neighbors of all 6 half edges, and then set the appropriate pointers of the faces and vertices. Note that we did not create a new half edge; we took the old one and just changed where it pointed from and to. </p>
 
-<p>Barycentric coordinates express any point as the weighted average of the vertices of a polygon (or polyhedron in multiple dimensions) which allows two dimensional interpolation with three points. Furthermore, the interpolation is also linear, because the line connecting any two points is colored with a linear gradient. This is useful for both color and texture interpolation of the triangle interior.</p>
+<p>We ran into an error where we were unable to set the half edge of faces and vertices because it was a protected field, but by playing around with pointers and stuff we were able to get it to work. </p>
+<div align="middle">
+    <img src="images/Task 4 Teapot 0.png" align="middle" width="400px"/>
+    <figcaption align="middle">Teapot before many edge flips</figcaption>
+</div>
+<p>The image above shows the teapot before edge flips. </p>
+<div align="middle">
+    <img src="images/Task 4 Teapot 1.png" align="middle" width="400px"/>
+    <figcaption align="middle">Teapot after many edge flips</figcaption>
+</div>
+<p>The image above shows the teapot after some edge flips. We were able to carve a slab through the middle of the teapot. </p>
+<div align="middle">
+    <img src="images/Task 4 Teapot 2.png" align="middle" width="400px"/>
+    <figcaption align="middle">Teapot after many edge flips</figcaption>
+</div>
+<p>The image above shows the same teapot as before, but using the smooth shading instead. </p>
 
 <div align="middle">
     <img src="images/Task 4.png" align="middle" width="400px"/>
