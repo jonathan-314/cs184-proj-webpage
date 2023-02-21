@@ -15,7 +15,7 @@
     font-family: 'Source Sans Pro', sans-serif;
   }
 </style>
-<title>CS 184 Rasterizer</title>
+<title>CS 184 Meshedit</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
 </head>
@@ -23,9 +23,9 @@
 
 <body>
 
-<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2018</h1>
-<h1 align="middle">Project 1: Rasterizer</h1>
-<h2 align="middle">Jonathan Guo, Wentinn Liao, CS184-wl</h2>
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+<h1 align="middle">Project 2: Meshedit</h1>
+<h2 align="middle">Jonathan Guo, Wentinn Liao, cs184-jgwl</h2>
 
 <br><br>
 
@@ -36,9 +36,9 @@
 
 
 
-<h2 align="middle">Section I: Rasterization</h2>
+<h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
 
-<h3 align="middle">Part 1: Rasterizing single-color triangles</h3>
+<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
 
 <p>Our rasterization algorithm uses a helper function <strong>inside_triangle</strong> that determines if a point is inside a specified triangle. Its implementation uses cross product to determine which side the point is on for each side of the triangle. To avoid handedness issues and to ensure points on the edge are also considered inside the triangle, a point is considered inside if all three cross products are either nonnegative, or nonpositive.</p>
 
@@ -50,9 +50,14 @@
 </div>
 
 
-<h3 align="middle">Part 2: Antialiasing triangles</h3>
+<h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
 
-<p>The Casteljau </p>
+<p>The Casteljau algorithm for Bezier surfaces simply calls the 1D version multiple times. For the first dimension, 1D Casteljau interpolation is called on each row for parameter <strong>u</strong>. For an <strong>n x n</strong> grid of control points, this produces a vector of <strong>n</strong> intermediate control points. 1D Casteljau interpolation is called again on these intermediate control points with parameter <strong>v</strong> to obtain the final desired point.</p>
+
+<div align="middle">
+    <img src="images/Task 2 Teapot.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>bez/teapot.bez</em>.</figcaption>
+</div>
 
 <div align="middle">
     <table style="width=100%">
@@ -76,18 +81,20 @@
 <p>We can see that there is a great disconnection on the left when the sampling rate is 1, while 4 is blurred and 16 is more finely blurred. This small scale effect is due to the fact that not all supersamples of a pixel lie inside the triangle and the color assigned to the pixel now depends on the fraction of supersamples that lie in the triangle. On a large scale, this visually reduces aliasing artifacts. We do not see the blur from far away because at a single point, our retina sees an average of light reflecting from a small local region so a uniform blurred color achieves the same effect as would many smaller pixels without supersampling.</p>
 
 
-<h3 align="middle">Part 3: Transforms</h3>
+
+<h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
+
+<h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
 
 <div align="middle">
     <img src="images/Task 3 Robot Wave.png" align="middle" width="400px"/>
     <figcaption align="middle">Robot Waving. </figcaption>
 </div>
 
-<p>Here we tried making our robot wave. This was achieved by rotating the robot's head as well as the robot's arm by various degrees. However, with the rotation of the head/arm, we also had to translate those back to their original position as the rotation took them out of position. 
+<p>Here we tried making our robot wave. This was achieved by rotating the robot's head as well as the robot's arm by various degrees. However, with the rotation of the head/arm, we also had to translate those back to their original position as the rotation took them out of position.
 
-<h2 align="middle">Section II: Sampling</h2>
 
-<h3 align="middle">Part 4: Barycentric coordinates</h3>
+<h3 align="middle">Part 4: Edge Flip</h3>
 
 <div align="middle">
     <img src="images/Barycentric Interpolation Example.png" align="middle" width="400px"/>
@@ -102,7 +109,7 @@
 </div>
 
 
-<h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
+<h3 align="middle">Part 5: Edge Split</h3>
 
 <p>Pixel sampling is a way of obtaining or approximating the desired texture for intermediate pixels. Both nearest and bilinear start with barycentric interpolation of the texel coordinates of the vertices to obtain the appropriate texel coordinates of the desired pixel. Nearest pixel sampling rounds the texel coordinates to the nearest integer and matches the texture at those integer coordinates. In contrast, bilinear pixel sampling takes the texture values at the vertices of the unit square containing the pixel coordinates and makes a linear interpolation in the u and v directions (texel coordinates). This allows a smoother gradient for "large" pixels, i.e. pixels containing many texel lattices.</p>
 
@@ -135,7 +142,7 @@
 <p>As seen above, bilinear texture sampling already nearly approximates rate 16 antialiasing of nearest pixel. Bilinear interpolation visually outperforms nearest neighbor when few texture pixels correspond to many pixels, i.e. when texels are stretched across an obtuse triangle. Nearest pixel will show a significant dropoff between texture lattice points, while bilinear interpolation will produce a smooth linear gradient.</p>
 
 
-<h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
+<h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
 
 <p>Level sampling allows us to compute pixel sampling faster and allow for more antialiasing. Instead of going pixel by pixel, level sampling may in some cases jump by many pixels at once (by taking the average which has been precomputed). This allows us to render the images faster. Increasing the number of samples per pixel decreases speed, increases memory usage, and increases antialiasing power since we sample a lot more. Level sampling, on the other hand, is the opposite: as the level number increases, the image becomes blurrier, so it is faster, uses less memory, but also has decreased antialising power. Finally, pixel sampling nearest is slightly faster than bilinear but also is susceptible to aliases. </p>
 
