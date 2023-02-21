@@ -155,6 +155,8 @@
 
 <p>Sharp edges and corners become less sharp (more rounded) after loop subdivision. This is because during loop subdivision, we move each vertex to a new position based on its neighbors. So, if a vertex or edge is very sharp, it will be moved closer to its neighbors and become less sharp. </p>
 
+<p>To reduce this effect, we can split some edges that are near the sharp edge/corner. This way, when the vertices are moved during the loop subdivision, the sharp edge/corner won't be moved as much, thereby reducing the effect. </p>
+
 <p>We can preprocess the cube to avoid assymetry. The way to do this is to split every edge that goes along the face of the cube. This way, each face has an X instead of just a \ or a /, leading to more symmetry. </p>
 <div align="middle">
 	<table style="with=100%">
