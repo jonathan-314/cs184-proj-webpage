@@ -151,7 +151,9 @@
 
 <h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
 
-<p>Level sampling allows us to compute pixel sampling faster and allow for more antialiasing. Instead of going pixel by pixel, level sampling may in some cases jump by many pixels at once (by taking the average which has been precomputed). This allows us to render the images faster. Increasing the number of samples per pixel decreases speed, increases memory usage, and increases antialiasing power since we sample a lot more. Level sampling, on the other hand, is the opposite: as the level number increases, the image becomes blurrier, so it is faster, uses less memory, but also has decreased antialising power. Finally, pixel sampling nearest is slightly faster than bilinear but also is susceptible to aliases. </p>
+<p>We implemented loop subdivision using the recommended method. First we calculated the new position of both the new vertices as well as the old vertices. Next, we split every edge. Here, because the list of edges is stored as a linked list, and new edges are appended to the end, what we did was we knew we only had to split a certain number of edges, so we blindly used a for loop to split that number of edges. This way we could use the isNew flag for the flipping. After splitting we did flipping and then set the vertex positions to the calculated ones. </p>
+
+<p>We can preprocess the cube to avoid assymetry. The way to do this is to split every edge that goes along the face of the cube. This way, each face has an X instead of just a \ or a /, leading to more symmetry. </p>
 
 <div align="middle">
     <table style="width=100%">
