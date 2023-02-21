@@ -81,6 +81,7 @@
     <figcaption align="middle"><em>bzc/curve6.bzc</em>.</figcaption>
 </div>
 
+
 <h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
 
 <p>The Casteljau algorithm for Bezier surfaces simply calls the 1D version multiple times. For the first dimension, 1D Casteljau interpolation is called on each row for parameter <strong>u</strong>. For an <strong>n x n</strong> grid of control points, this produces a vector of <strong>n</strong> intermediate control points. 1D Casteljau interpolation is called again on these intermediate control points with parameter <strong>v</strong> to obtain the final desired point.</p>
@@ -127,43 +128,25 @@
 </div>
 <p>The image above shows the same teapot as before, but using the smooth shading instead. </p>
 
-<div align="middle">
-    <img src="images/Task 4.png" align="middle" width="400px"/>
-    <figcaption align="middle">Barycentric interpolation <em>basic/test7.svg</em>.</figcaption>
-</div>
-
 
 <h3 align="middle">Part 5: Edge Split</h3>
 
-<p>Pixel sampling is a way of obtaining or approximating the desired texture for intermediate pixels. Both nearest and bilinear start with barycentric interpolation of the texel coordinates of the vertices to obtain the appropriate texel coordinates of the desired pixel. Nearest pixel sampling rounds the texel coordinates to the nearest integer and matches the texture at those integer coordinates. In contrast, bilinear pixel sampling takes the texture values at the vertices of the unit square containing the pixel coordinates and makes a linear interpolation in the u and v directions (texel coordinates). This allows a smoother gradient for "large" pixels, i.e. pixels containing many texel lattices.</p>
+<p>Carefully. The overall implementation was separated into 5 sections: <ul>
+        <li>Getting all vertex, halfedge, and face objects and naming in a way that is easy to understand</li>
+        <li>Creating the midpoint, new halfedges, edges, and faces with the same naming convention as before</li>
+        <li>Setting pointers for new objects</li>
+        <li>Setting pointers for persistent old objects</li>
+        <li>Deleting nonpersistent old objects</li>
+    </ul> Small things that were almost missed were making sure to update the four original halfedges with new faces, and making sure to correctly delete the original faces. Keeping track of all data structures and variables that needed to be changed allowed us to implement it correctly first try.</p>
 
 <div align="middle">
-    <table style="width=100%">
-        <tr>
-            <td>
-                <img src="images/Task 5 Nearest Rate 1.png" align="middle" width="400px"/>
-                <figcaption align="middle">Nearest pixel sampling rate 1 <em>texmap/test5.svg</em>.</figcaption>
-            </td>
-            <td>
-                <img src="images/Task 5 Nearest Rate 16.png" align="middle" width="400px"/>
-                <figcaption align="middle">Nearest pixel sampling rate 16 <em>texmap/test5.svg</em>.</figcaption>
-            </td>
-        </tr>
-        <br>
-        <tr>
-            <td>
-                <img src="images/Task 5 Bilinear Rate 1.png" align="middle" width="400px"/>
-                <figcaption align="middle">Bilinear pixel sampling rate 1 <em>texmap/test5.svg</em>.</figcaption>
-            </td>
-            <td>
-                <img src="images/Task 5 Bilinear Rate 16.png" align="middle" width="400px"/>
-                <figcaption align="middle">Bilinear pixel sampling rate 16 <em>texmap/test5.svg</em>.</figcaption>
-            </td>
-        </tr>
-    </table>
+    <img src="images/Task 5/Edge Split.png" align="middle" width="400px"/>
+    <figcaption align="middle">Edge splits <em>dae/teapot.dae</em>.</figcaption>
 </div>
-
-<p>As seen above, bilinear texture sampling already nearly approximates rate 16 antialiasing of nearest pixel. Bilinear interpolation visually outperforms nearest neighbor when few texture pixels correspond to many pixels, i.e. when texels are stretched across an obtuse triangle. Nearest pixel will show a significant dropoff between texture lattice points, while bilinear interpolation will produce a smooth linear gradient.</p>
+<div align="middle">
+    <img src="images/Task 5/Edge Split and Flip.png" align="middle" width="400px"/>
+    <figcaption align="middle">Combination of edge splits and flips <em>dae/teapot.dae</em>.</figcaption>
+</div>
 
 
 <h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
