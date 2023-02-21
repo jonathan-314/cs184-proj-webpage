@@ -59,39 +59,20 @@
     <figcaption align="middle"><em>bez/teapot.bez</em>.</figcaption>
 </div>
 
-<div align="middle">
-    <table style="width=100%">
-        <tr>
-            <td>
-                <img src="images/Task 2 Rate 1.png" align="middle" width="300px"/>
-                <figcaption align="middle">Supersampling rate 1 <em>basic/test4.svg</em>.</figcaption>
-            </td>
-            <td>
-                <img src="images/Task 2 Rate 4.png" align="middle" width="300px"/>
-                <figcaption align="middle">Supersampling rate 4 <em>basic/test4.svg</em>.</figcaption>
-            </td>
-            <td>
-                <img src="images/Task 2 Rate 16.png" align="middle" width="300px"/>
-                <figcaption align="middle">Supersampling rate 16 <em>basic/test4.svg</em>.</figcaption>
-            </td>
-        </tr>
-    </table>
-</div>
-
-<p>We can see that there is a great disconnection on the left when the sampling rate is 1, while 4 is blurred and 16 is more finely blurred. This small scale effect is due to the fact that not all supersamples of a pixel lie inside the triangle and the color assigned to the pixel now depends on the fraction of supersamples that lie in the triangle. On a large scale, this visually reduces aliasing artifacts. We do not see the blur from far away because at a single point, our retina sees an average of light reflecting from a small local region so a uniform blurred color achieves the same effect as would many smaller pixels without supersampling.</p>
-
 
 
 <h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
 <h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
 
-<div align="middle">
-    <img src="images/Task 3 Robot Wave.png" align="middle" width="400px"/>
-    <figcaption align="middle">Robot Waving. </figcaption>
-</div>
+<p>To reduce repeated code, we noted that the existing <strong>normal()</strong> function of <strong>Face</strong> already computes a normal vector whose norm is twice the area of the face itself, however, returns the normalized version. Thus, we wrote a function <strong>areaWeightedNormal()</strong> that returns the penultimate result of the code for <strong>normal()</strong>, and modify <strong>normal()</strong> to call that.</p>
 
-<p>Here we tried making our robot wave. This was achieved by rotating the robot's head as well as the robot's arm by various degrees. However, with the rotation of the head/arm, we also had to translate those back to their original position as the rotation took them out of position.
+<p>Then, to iterate over the faces, we select a starting halfedge then iterate by changing <strong>h</strong> to <strong>h->twin()->next()</strong>. Each iteration, we retrieve the face the halfedge is on, and accumulate the sum of the area weighted normals. This produces a weighted sum of the face normals adjacent to the vertex, and at the end we simply call <strong>unit()</strong> to normalize.</p>
+
+<div align="middle">
+    <img src="images/Task 3 Teapot.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Area Weighted Vertex Normals: dae/teapot.dae</em>.</figcaption>
+</div>
 
 
 <h3 align="middle">Part 4: Edge Flip</h3>
