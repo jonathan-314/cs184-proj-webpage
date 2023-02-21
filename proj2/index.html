@@ -32,7 +32,7 @@
 <div>
 
 <h2 align="middle">Overview</h2>
-<p>In this project, we implemented a basic rasterizer with efficient solutions to aliasing artifacts for jaggies and texture mapping. It was interesting to see how simple optimizations with algorithms and data structures can greatly improve the visual quality of triangle rasterization.</p>
+<p>TODO In this project, we implemented </p>
 
 
 
@@ -40,15 +40,46 @@
 
 <h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
 
-<p>Our rasterization algorithm uses a helper function <strong>inside_triangle</strong> that determines if a point is inside a specified triangle. Its implementation uses cross product to determine which side the point is on for each side of the triangle. To avoid handedness issues and to ensure points on the edge are also considered inside the triangle, a point is considered inside if all three cross products are either nonnegative, or nonpositive.</p>
-
-<p>We then compute the minimum and maximum x and y coordinates of each of the triangle vertices in order to compute the bounding box of the triangle. We make no optimizations beyond this and simply iterate through all coordinates in the bounding box checking whether they are inside the triangle or not. In the basic implementation, <strong>fill_pixel</strong> is called if the center of the pixel is within the triangle, and nothing is done otherwise.</p>
+<p>The Casteljau algorithm for Bezier curves recursively computes a linear interpolation of the control points. For each iteration, we iterated through the given control points and computed (1-t)p[i] + tp[i+1], which we then returned. If this function was called recursively until there was one point left, that point would be on the bezier curve. The figures below show how each iteration is computed from the previous iteration, using t = 0.5 (so it takes the midpoint of the previous control points)</p>
 
 <div align="middle">
-    <img src="images/Task 1.png" align="middle" width="400px"/>
-    <figcaption align="middle">Default <em>basic/test4.svg</em>.</figcaption>
+	<table style="width=100%">
+		<tr>
+			<td>
+		    <img src="images/Task 1/bzc0.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 0 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		    <td>
+		    <img src="images/Task 1/bzc1.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 1 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		</tr>
+		<tr>
+			<td>
+		    <img src="images/Task 1/bzc2.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 3 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		    <td>
+		    <img src="images/Task 1/bzc3.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 3 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		</tr>
+		<tr>
+			<td>
+		    <img src="images/Task 1/bzc4.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 4 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		    <td>
+		    <img src="images/Task 1/bzc5.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 5 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		</tr>
+	</table>
 </div>
-
+<p>The image below shows the completed Bezier curve, computed by iterating over many t values between 0 and 1 using the above method. </p>
+<div align="middle">
+    <img src="images/Task 1/bzc6.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>bzc/curve6.bzc</em>.</figcaption>
+</div>
+<p>Finally, the image below shows the Bezier curve after some of the original control points were modified and with a different t value. </p>
+<div align="middle">
+    <img src="images/Task 1/bzc7.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>bzc/curve6.bzc</em>.</figcaption>
+</div>
 
 <h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
 
