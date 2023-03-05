@@ -15,7 +15,7 @@
     font-family: 'Source Sans Pro', sans-serif;
   }
 </style>
-<title>CS 184 Meshedit</title>
+<title>CS 184 Pathtracer 1</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
 <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
 </head>
@@ -24,23 +24,53 @@
 <body>
 
 <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
-<h1 align="middle">Project 2: Meshedit</h1>
-<h2 align="middle">Jonathan Guo, Wentinn Liao, cs184-jgwl</h2>
+<h1 align="middle">Project 3: Pathtracer 1</h1>
+<h2 align="middle">Jonathan Guo, Wentinn Liao, cs184jgwl</h2>
 
 <br><br>
 
 <div>
 
 <h2 align="middle">Overview</h2>
-<p>In this project, we implemented Casteljau's algorithm to compute Bezier interpolations of control points, which allows us to compute smooth curves and surfaces with little memory requirements. We also implemented area-weighted vertex normals, which allow us to shade polygons using barycentric interpolation, which allows for a smoother expression of the object. Finally, we implemented functions to split and flip half edges in the mesh data structure, which are tools for the loop subdivision algorithm. The subdivision algorithm creates finer meshes by interpolating and smoothing existing vertices, which allows us to smooth a coarser mesh into a finer, rounder mesh.</p>
+<p>In this project, we implemented some path and ray tracing algorithms...</p>
 
 
 
-<h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+<h2 align="middle">Part I: Ray Generation and Scene Intersection</h2>
 
-<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
+<p>To generate rays from the camera, first we took the x and the y values and translated them into the camera space x and y by multiplying by the width of the viewplane and translating appropriately. Next, we turned them into world space by multiplying by the c2w matrix. Finally, there was the normalization and adding of position that occurs normally. </p>
 
-<p>The Casteljau algorithm for Bezier curves recursively computes a linear interpolation of the control points. For each iteration, we iterated through the given control points and computed (1-t)p[i] + tp[i+1], which we then returned. If this function was called recursively until there was one point left, that point would be on the bezier curve. The figures below show how each iteration is computed from the previous iteration, using t = 0.5 (so it takes the midpoint of the previous control points)</p>
+<p>The triangle intersection algorithm we implemented was based off slide 22 in lecture 9, the optimized version. But what it basically does is that we know that the point of intersection of the ray and the triangle is on the plane of the triangle, which means the dot product between the plane's normal and a vector on the plane to the point of intersection is zero. Once there, we can compute the barycentric coordinates of the point of intersection with respect to the triangle, and it is inside the triangle if and only if all of the coordinates are non-negative. </p>
+
+<div align="middle">
+	<table>
+		<tr>
+			<td>
+    <img src="images/Task 1/teapot.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>dae/meshedit/teapot.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 1/cow.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>dae/meshedit/cow.dae</em>.</figcaption></td>
+</tr>
+</table>
+</div>
+
+<h2 align="middle">Part II: Bounding Volume Hierarchy</h2>
+
+<p>Our Bounding Volume Hierarchy construction algorithm took the longest side of the box and split the objects by the midpoint of that side. It terminated if the all of the primitives were on one side of the midpoint. Although this is not ideal, in practice it almost always does not occur until the very end when there are very few primitives left. </p>
+
+<div align="middle">
+	<img src="images/Task 2/cow.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>dae/meshedit/cow.dae</em>.</figcaption></td>
+</div>
+<div align="middle">
+	<img src="images/Task 2/maxplanck.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>dae/meshedit/maxplanck.dae</em>.</figcaption></td>
+</div>
+<div align="middle">
+	<img src="images/Task 2/CBlucy.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>dae/sky/CBlucy.dae</em>.</figcaption></td>
+</div>
 
 <div align="middle">
 	<table style="width=100%">
