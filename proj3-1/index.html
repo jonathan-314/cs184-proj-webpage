@@ -1,7 +1,202 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-1 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Meshedit</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+<h1 align="middle">Project 2: Meshedit</h1>
+<h2 align="middle">Jonathan Guo, Wentinn Liao, cs184-jgwl</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>In this project, we implemented Casteljau's algorithm to compute Bezier interpolations of control points, which allows us to compute smooth curves and surfaces with little memory requirements. We also implemented area-weighted vertex normals, which allow us to shade polygons using barycentric interpolation, which allows for a smoother expression of the object. Finally, we implemented functions to split and flip half edges in the mesh data structure, which are tools for the loop subdivision algorithm. The subdivision algorithm creates finer meshes by interpolating and smoothing existing vertices, which allows us to smooth a coarser mesh into a finer, rounder mesh.</p>
+
+
+
+<h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+
+<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
+
+<p>The Casteljau algorithm for Bezier curves recursively computes a linear interpolation of the control points. For each iteration, we iterated through the given control points and computed (1-t)p[i] + tp[i+1], which we then returned. If this function was called recursively until there was one point left, that point would be on the bezier curve. The figures below show how each iteration is computed from the previous iteration, using t = 0.5 (so it takes the midpoint of the previous control points)</p>
+
+<div align="middle">
+	<table style="width=100%">
+		<tr>
+			<td>
+		    <img src="images/Task 1/bzc0.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 0 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		    <td>
+		    <img src="images/Task 1/bzc1.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 1 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		</tr>
+		<tr>
+			<td>
+		    <img src="images/Task 1/bzc2.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 3 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		    <td>
+		    <img src="images/Task 1/bzc3.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 3 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		</tr>
+		<tr>
+			<td>
+		    <img src="images/Task 1/bzc4.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 4 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		    <td>
+		    <img src="images/Task 1/bzc5.png" align="middle" width="400px"/>
+		    <figcaption align="middle">Iteration 5 <em>bzc/curve6.bzc</em>.</figcaption></td>
+		</tr>
+	</table>
+</div>
+<p>The image below shows the completed Bezier curve, computed by iterating over many t values between 0 and 1 using the above method. </p>
+<div align="middle">
+    <img src="images/Task 1/bzc6.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>bzc/curve6.bzc</em>.</figcaption>
+</div>
+<p>Finally, the image below shows the Bezier curve after some of the original control points were modified and with a different t value. </p>
+<div align="middle">
+    <img src="images/Task 1/bzc7.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>bzc/curve6.bzc</em>.</figcaption>
+</div>
+
+
+<h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
+
+<p>The Casteljau algorithm for Bezier surfaces simply calls the 1D version multiple times. For the first dimension, 1D Casteljau interpolation is called on each row for parameter <strong>u</strong>. For an <strong>n x n</strong> grid of control points, this produces a vector of <strong>n</strong> intermediate control points. 1D Casteljau interpolation is called again on these intermediate control points with parameter <strong>v</strong> to obtain the final desired point.</p>
+
+<div align="middle">
+    <img src="images/Task 2 Teapot.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>bez/teapot.bez</em>.</figcaption>
+</div>
+
+
+
+<h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
+
+<h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
+
+<p>To reduce repeated code, we noted that the existing <strong>normal()</strong> function of <strong>Face</strong> already computes a normal vector whose norm is twice the area of the face itself, however, returns the normalized version. Thus, we wrote a function <strong>areaWeightedNormal()</strong> that returns the penultimate result of the code for <strong>normal()</strong>, and modify <strong>normal()</strong> to call that.</p>
+
+<p>Then, to iterate over the faces, we select a starting halfedge then iterate by changing <strong>h</strong> to <strong>h->twin()->next()</strong>. Each iteration, we retrieve the face the halfedge is on, and accumulate the sum of the area weighted normals. This produces a weighted sum of the face normals adjacent to the vertex, and at the end we simply call <strong>unit()</strong> to normalize.</p>
+
+<div align="middle">
+    <img src="images/Task 3 Teapot.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Area Weighted Vertex Normals: dae/teapot.dae</em>.</figcaption>
+</div>
+
+
+<h3 align="middle">Part 4: Edge Flip</h3>
+
+<p>To implement Edge Flip, first we gathered all of the faces, vertices, and half edges necessary. Then, we set the neighbors of all 6 half edges, and then set the appropriate pointers of the faces and vertices. Note that we did not create a new half edge; we took the old one and just changed where it pointed from and to. </p>
+
+<p>We ran into an error where we were unable to set the half edge of faces and vertices because it was a protected field, but by playing around with pointers and stuff we were able to get it to work. </p>
+<div align="middle">
+    <img src="images/Task 4 Teapot 0.png" align="middle" width="400px"/>
+    <figcaption align="middle">Teapot before many edge flips</figcaption>
+</div>
+<p>The image above shows the teapot before edge flips. </p>
+<div align="middle">
+    <img src="images/Task 4 Teapot 1.png" align="middle" width="400px"/>
+    <figcaption align="middle">Teapot after many edge flips</figcaption>
+</div>
+<p>The image above shows the teapot after some edge flips. We were able to carve a slab through the middle of the teapot. </p>
+<div align="middle">
+    <img src="images/Task 4 Teapot 2.png" align="middle" width="400px"/>
+    <figcaption align="middle">Teapot after many edge flips</figcaption>
+</div>
+<p>The image above shows the same teapot as before, but using the smooth shading instead. </p>
+
+
+<h3 align="middle">Part 5: Edge Split</h3>
+
+<p>Carefully. The overall implementation was separated into 5 sections: <ul>
+        <li>Getting all vertex, halfedge, and face objects and naming in a way that is easy to understand</li>
+        <li>Creating the midpoint, new halfedges, edges, and faces with the same naming convention as before</li>
+        <li>Setting pointers for new objects</li>
+        <li>Setting pointers for persistent old objects</li>
+        <li>Deleting nonpersistent old objects</li>
+    </ul> Small things that were almost missed were making sure to update the four original halfedges with new faces, and making sure to correctly delete the original faces. Keeping track of all data structures and variables that needed to be changed allowed us to implement it correctly first try.</p>
+
+<div align="middle">
+    <img src="images/Task 5/Edge Split.png" align="middle" width="400px"/>
+    <figcaption align="middle">Edge splits <em>dae/teapot.dae</em>.</figcaption>
+</div>
+<div align="middle">
+    <img src="images/Task 5/Edge Split and Flip.png" align="middle" width="400px"/>
+    <figcaption align="middle">Combination of edge splits and flips <em>dae/teapot.dae</em>.</figcaption>
+</div>
+
+
+<h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
+
+<p>We implemented loop subdivision using the recommended method. First we calculated the new position of both the new vertices as well as the old vertices. Next, we split every edge. Here, because the list of edges is stored as a linked list, and new edges are appended to the end, what we did was we knew we only had to split a certain number of edges, so we blindly used a for loop to split that number of edges. This way we could use the isNew flag for the flipping. After splitting we did flipping and then set the vertex positions to the calculated ones. </p>
+
+<p>Sharp edges and corners become less sharp (more rounded) after loop subdivision. This is because during loop subdivision, we move each vertex to a new position based on its neighbors. So, if a vertex or edge is very sharp, it will be moved closer to its neighbors and become less sharp. </p>
+
+<p>To reduce this effect, we can split some edges that are near the sharp edge/corner. This way, when the vertices are moved during the loop subdivision, the sharp edge/corner won't be moved as much, thereby reducing the effect. </p>
+
+<p>We can preprocess the cube to avoid assymetry. The way to do this is to split every edge that goes along the face of the cube. This way, each face has an X instead of just a \ or a /, leading to more symmetry. </p>
+<div align="middle">
+	<table style="with=100%">
+		<tr>
+			<td>
+	<img src="images/Task 6/cube 0.png" align="middle" width="400px"/>
+    <figcaption align="middle">Cube after preprocessing<em>./dae/cube.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 6/cube 1.png" align="middle" width="400px"/>
+    <figcaption align="middle">Cube after preprocessing<em>./dae/cube.dae</em>.</figcaption></td>
+	</tr>
+</table>
+</div>
+<p>Next, once we upsample once, we see that the cube is symmetrical, because each face (before the upsampling) was symmetrical. </p>
+<div align="middle">
+	<table style="with=100%">
+		<tr>
+			<td>
+	<img src="images/Task 6/cube 2.png" align="middle" width="400px"/>
+    <figcaption align="middle">Cube after 1 loop subdivision<em>./dae/cube.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 6/cube 3.png" align="middle" width="400px"/>
+    <figcaption align="middle">Cube after 1 loop subdivision<em>./dae/cube.dae</em>.</figcaption></td>
+	</tr>
+</table>
+</div>
+<p>We can also do more loop subdivisions. </p>
+<div align="middle">
+	<table style="with=100%">
+		<tr>
+			<td>
+	<img src="images/Task 6/cube 4.png" align="middle" width="400px"/>
+    <figcaption align="middle">Cube after 2 loop subdivisions<em>./dae/cube.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 6/cube 5.png" align="middle" width="400px"/>
+    <figcaption align="middle">Cube after 3 loop subdivisions<em>./dae/cube.dae</em>.</figcaption></td>
+	</tr>
+</table>
+</div>
+
+
+</body>
 </html>
