@@ -74,7 +74,7 @@
 </div>
 
 
-<h2 align="middle">Part III: Bezier Surfaces with Separable 1D de Casteljau</h2>
+<h2 align="middle">Part III: Direct Illumination</h2>
 
 <p>The direct lighting function with uniform hemispheric sampling treats all samples identically. For each sample, we sample a random vector in a <strong>z</strong>-positive hemisphere. Because this is <strong>z</strong>-positive with respect to the object, this is the incoming direction in the object space, <strong>w_in_o</strong> which is translated to the incoming direction in the world space <strong>w_in_w</strong> using <strong>o2w</strong>. We then use the BVH data structure to compute the first intersection of the uniformly sampled ray with an object, denoted <strong>incoming_isect</strong>, and obtain its emitted radiance. We then multiply by the BSDF at the camera ray intersection with the outgoing ray to the camera and the incoming ray from the emitting object and cosine of the incoming angle and add to a cumulative sum of radiance. Finally, we divide by the uniform PDF (or multiply by <strong>2 pi</strong>, and divide by the total number of samples.</p>
 
@@ -120,20 +120,33 @@
     </table>
 </div>
 
-
-
-<h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
-
-<h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
-
-<p>To reduce repeated code, we noted that the existing <strong>normal()</strong> function of <strong>Face</strong> already computes a normal vector whose norm is twice the area of the face itself, however, returns the normalized version. Thus, we wrote a function <strong>areaWeightedNormal()</strong> that returns the penultimate result of the code for <strong>normal()</strong>, and modify <strong>normal()</strong> to call that.</p>
-
-<p>Then, to iterate over the faces, we select a starting halfedge then iterate by changing <strong>h</strong> to <strong>h->twin()->next()</strong>. Each iteration, we retrieve the face the halfedge is on, and accumulate the sum of the area weighted normals. This produces a weighted sum of the face normals adjacent to the vertex, and at the end we simply call <strong>unit()</strong> to normalize.</p>
+<h3 align="middle">Part 4: Global Illumination</h3>
 
 <div align="middle">
-    <img src="images/Task 3 Teapot.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Area Weighted Vertex Normals: dae/teapot.dae</em>.</figcaption>
+    <table>
+        <tr>
+            <td> <img src="images/Task 3/dragon_1_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 1 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+    <td> <img src="images/Task 3/dragon_2_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 2 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+</tr>
+<tr>
+            <td> <img src="images/Task 3/dragon_4_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 4 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+    <td> <img src="images/Task 3/dragon_8_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 8 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+</tr>
+<tr>
+            <td> <img src="images/Task 3/dragon_16_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 16 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+    <td> <img src="images/Task 3/dragon_64_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 64 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+</tr>
+</table>
+<img src="images/Task 3/dragon_1024_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 1024 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> 
 </div>
+
 
 
 <h3 align="middle">Part 4: Edge Flip</h3>
