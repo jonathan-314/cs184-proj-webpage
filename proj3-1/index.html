@@ -121,7 +121,18 @@
 </div>
 
 
-<h3 align="middle">Part IV: Global Illumination</h3>
+<h2 align="middle">Part IV: Global Illumination</h2>
+
+<p>Our indirect lighting implementation occurs inside the <strong>at_least_one_bounce_radiance</strong> function, and first checks if the depth is greater than 1, and if not returns the one bounce radiance immediately. Indirect lighting is then computed by the remainder of the function. Using the desired outgoing direction, we sample the bsdf of the given intersection with <strong>sample_f</strong> to obtain the BSDF, PDF, and the sampled incoming ray, which is denoted by <strong>next_d_in_o</strong>, which occurs in the object space. This incoming direction is translated to world space with <strong>o2w</strong> and along with the hit point is used to construct the next ray. The new ray's depth is decremented once from the given ray.</p>
+
+<p>With Russian Roulette implementation, we go on the conditions that the Bernoulli random variable comes up heads, or 1, and the newly constructed ray intersects at least one object. Because the coin flip is much faster, it is checked first, and the intersection is checked second with the BVH data structure. Finally, indirect lighting is calculated by recursively calling <strong>at_least_one_bounce_radiance</strong> on the new ray and inew intersection point, with the sampled BSDF and <strong>next_d_in_o</strong> as incoming angle, and the added term is divided by the PDF, and the continuation probability, in order to maintain the same expected outcome. The recursive call makes sense because all indirect lighting occurs from a combination of direct and indirect lighting (at least one bounce) at other places that reflect back to the point of interest.</p>
+
+
+<h2 align="middle">Insert rest of images/commentary here.</h2>
+
+
+
+<p>Shown below are renderings of the dragon with global illumination and ray-per-pixel sampling rates in powers of 2, scaling up to 1024. Global illumination makes the image much brighter due to self-reflectance, and scaling up to 1024 rays per pixel gives the rendering solid definition.</p>
 
 <div align="middle">
     <table>
