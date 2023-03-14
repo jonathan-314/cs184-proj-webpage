@@ -127,6 +127,39 @@
 
 <p>With Russian Roulette implementation, we go on the conditions that the Bernoulli random variable comes up heads, or 1, and the newly constructed ray intersects at least one object. Because the coin flip is much faster, it is checked first, and the intersection is checked second with the BVH data structure. Finally, indirect lighting is calculated by recursively calling <strong>at_least_one_bounce_radiance</strong> on the new ray and inew intersection point, with the sampled BSDF and <strong>next_d_in_o</strong> as incoming angle, and the added term is divided by the PDF, and the continuation probability, in order to maintain the same expected outcome. The recursive call makes sense because all indirect lighting occurs from a combination of direct and indirect lighting (at least one bounce) at other places that reflect back to the point of interest.</p>
 
+<p>Also, below are some images rendered at 1024 samples per pixel and 32 samples per light using global illumination.</p>
+<div align="middle">
+    <img src="images/Task 3/bench_1024_32.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bench: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/bench.dae</em>.</figcaption>
+</div>
+<div align="middle">
+    <img src="images/Task 3/blob_1024_32.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Blob: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/blob.dae</em>.</figcaption>
+</div>
+<div align="middle">
+    <img src="images/Task 3/wall-e_1024_32.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Wall-E: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/wall-e.dae</em>.</figcaption>
+</div>
+
+<p>The images below show only direct and indirect lighting for the bunny scene. </p>
+<div align="middle">
+    <table>
+        <tr>
+            <td>
+                <img src="images/Task 3/bunny_1024_32_direct.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/CBbunny.dae</em>.</figcaption>
+</td>
+<td>
+    <img src="images/Task 3/bunny_1024_32_indirect.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, indirect lighting: dae/sky/CBbunny.dae</em>.</figcaption>
+</td>
+</tr>
+</table>
+</div>
+
+
+
+
 
 <h2 align="middle">Insert rest of images/commentary here.</h2>
 
