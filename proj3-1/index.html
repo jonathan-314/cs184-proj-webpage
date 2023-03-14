@@ -74,7 +74,7 @@
 </div>
 
 
-<h2 align="middle">Part III: Bezier Surfaces with Separable 1D de Casteljau</h2>
+<h2 align="middle">Part III: Direct Illumination</h2>
 
 <p>The direct lighting function with uniform hemispheric sampling treats all samples identically. For each sample, we sample a random vector in a <strong>z</strong>-positive hemisphere. Because this is <strong>z</strong>-positive with respect to the object, this is the incoming direction in the object space, <strong>w_in_o</strong> which is translated to the incoming direction in the world space <strong>w_in_w</strong> using <strong>o2w</strong>. We then use the BVH data structure to compute the first intersection of the uniformly sampled ray with an object, denoted <strong>incoming_isect</strong>, and obtain its emitted radiance. We then multiply by the BSDF at the camera ray intersection with the outgoing ray to the camera and the incoming ray from the emitting object and cosine of the incoming angle and add to a cumulative sum of radiance. Finally, we divide by the uniform PDF (or multiply by <strong>2 pi</strong>, and divide by the total number of samples.</p>
 
@@ -122,9 +122,7 @@
 
 
 
-<h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
-
-<h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
+<h2 align="middle">Part IV: Global Illumination</h2>
 
 <p>To reduce repeated code, we noted that the existing <strong>normal()</strong> function of <strong>Face</strong> already computes a normal vector whose norm is twice the area of the face itself, however, returns the normalized version. Thus, we wrote a function <strong>areaWeightedNormal()</strong> that returns the penultimate result of the code for <strong>normal()</strong>, and modify <strong>normal()</strong> to call that.</p>
 
@@ -136,101 +134,39 @@
 </div>
 
 
-<h3 align="middle">Part 4: Edge Flip</h3>
+<h2 align="middle">Part V: Adaptive Sampling</h2>
 
-<p>To implement Edge Flip, first we gathered all of the faces, vertices, and half edges necessary. Then, we set the neighbors of all 6 half edges, and then set the appropriate pointers of the faces and vertices. Note that we did not create a new half edge; we took the old one and just changed where it pointed from and to. </p>
+<p>Adaptive sampling is a performance optimization that empirically checks for convergence to determine whether more rays need to be sampled for that pixel. In general, the pixel will converge early if the contours around the point of intersection are relatively flat, facing the camera, meaning most generated rays intersect scene in roughly the same way. In contrast, surfaces that face diagonally or near perpendicular to the camera vary significantly even with small deviations in the rays, meaning that averaging many rays is required to accurately estimate the pixel shading.</p>
 
-<p>We ran into an error where we were unable to set the half edge of faces and vertices because it was a protected field, but by playing around with pointers and stuff we were able to get it to work. </p>
-<div align="middle">
-    <img src="images/Task 4 Teapot 0.png" align="middle" width="400px"/>
-    <figcaption align="middle">Teapot before many edge flips</figcaption>
-</div>
-<p>The image above shows the teapot before edge flips. </p>
-<div align="middle">
-    <img src="images/Task 4 Teapot 1.png" align="middle" width="400px"/>
-    <figcaption align="middle">Teapot after many edge flips</figcaption>
-</div>
-<p>The image above shows the teapot after some edge flips. We were able to carve a slab through the middle of the teapot. </p>
-<div align="middle">
-    <img src="images/Task 4 Teapot 2.png" align="middle" width="400px"/>
-    <figcaption align="middle">Teapot after many edge flips</figcaption>
-</div>
-<p>The image above shows the same teapot as before, but using the smooth shading instead. </p>
-
-
-<h3 align="middle">Part 5: Edge Split</h3>
-
-<p>Carefully. The overall implementation was separated into 5 sections: <ul>
-        <li>Getting all vertex, halfedge, and face objects and naming in a way that is easy to understand</li>
-        <li>Creating the midpoint, new halfedges, edges, and faces with the same naming convention as before</li>
-        <li>Setting pointers for new objects</li>
-        <li>Setting pointers for persistent old objects</li>
-        <li>Deleting nonpersistent old objects</li>
-    </ul> Small things that were almost missed were making sure to update the four original halfedges with new faces, and making sure to correctly delete the original faces. Keeping track of all data structures and variables that needed to be changed allowed us to implement it correctly first try.</p>
+<p>Our implementation keeps a running sum of the illuminance and illuminance squared, denoted <strong>s1</strong> and <strong>s2</strong> respectively. The check for convergence is done at the beginning, where the counting index <strong>n</strong> also represents the number of samples counted. If it is both greater than zero, a multiple of the number of samples per batch, and satisfies the convergence requirements, then we break the loop. To minimize the number of computations, we rearrange the equation to <strong>n * s2 &#8804 ((n - 1) * c - 1) * s1&#178</strong> where <strong>c</strong> is a precomputed constant <strong>(maxTolerance / 1.96)&#178</strong> which is an equivalent and much faster check for convergence. Finally, rather than dividing by <strong>num_samples</strong>, we divide by <strong>n</strong> and record that as the true number of samples.</p>
 
 <div align="middle">
-    <img src="images/Task 5/Edge Split.png" align="middle" width="400px"/>
-    <figcaption align="middle">Edge splits <em>dae/teapot.dae</em>.</figcaption>
-</div>
-<div align="middle">
-    <img src="images/Task 5/Edge Split and Flip.png" align="middle" width="400px"/>
-    <figcaption align="middle">Combination of edge splits and flips <em>dae/teapot.dae</em>.</figcaption>
-</div>
-
-
-<h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
-
-<p>We implemented loop subdivision using the recommended method. First we calculated the new position of both the new vertices as well as the old vertices. Next, we split every edge. Here, because the list of edges is stored as a linked list, and new edges are appended to the end, what we did was we knew we only had to split a certain number of edges, so we blindly used a for loop to split that number of edges. This way we could use the isNew flag for the flipping. After splitting we did flipping and then set the vertex positions to the calculated ones. </p>
-
-<p>Sharp edges and corners become less sharp (more rounded) after loop subdivision. This is because during loop subdivision, we move each vertex to a new position based on its neighbors. So, if a vertex or edge is very sharp, it will be moved closer to its neighbors and become less sharp. </p>
-
-<p>To reduce this effect, we can split some edges that are near the sharp edge/corner. This way, when the vertices are moved during the loop subdivision, the sharp edge/corner won't be moved as much, thereby reducing the effect. </p>
-
-<p>We can preprocess the cube to avoid assymetry. The way to do this is to split every edge that goes along the face of the cube. This way, each face has an X instead of just a \ or a /, leading to more symmetry. </p>
-<div align="middle">
-	<table style="with=100%">
-		<tr>
+    <table style="width=100%">
+        <tr>
             <td>
-                <img src="images/Task 6/cube 0.png" align="middle" width="400px"/>
-                <figcaption align="middle">Cube after preprocessing<em>./dae/cube.dae</em>.</figcaption>
+                <img src="images/Task 5/banana.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Rendering of banana with adaptive sampling.</figcaption>
             </td>
             <td>
-                <img src="images/Task 6/cube 1.png" align="middle" width="400px"/>
-                <figcaption align="middle">Cube after preprocessing<em>./dae/cube.dae</em>.</figcaption>
+                <img src="images/Task 5/banana_rate.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Sampling rates with adaptive sampling.</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="images/Task 5/building.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Rendering of building with adapative sampling.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 5/building_rate.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Sampling rates with adaptive sampling.</figcaption>
             </td>
         </tr>
     </table>
 </div>
-<p>Next, once we upsample once, we see that the cube is symmetrical, because each face (before the upsampling) was symmetrical. </p>
-<div align="middle">
-	<table style="with=100%">
-		<tr>
-            <td>
-                <img src="images/Task 6/cube 2.png" align="middle" width="400px"/>
-                <figcaption align="middle">Cube after 1 loop subdivision<em>./dae/cube.dae</em>.</figcaption>
-            </td>
-            <td>
-                <img src="images/Task 6/cube 3.png" align="middle" width="400px"/>
-                <figcaption align="middle">Cube after 1 loop subdivision<em>./dae/cube.dae</em>.</figcaption>
-            </td>
-        </tr>
-    </table>
-</div>
-<p>We can also do more loop subdivisions. </p>
-<div align="middle">
-	<table style="with=100%">
-		<tr>
-            <td>
-                <img src="images/Task 6/cube 4.png" align="middle" width="400px"/>
-                <figcaption align="middle">Cube after 2 loop subdivisions<em>./dae/cube.dae</em>.</figcaption>
-            </td>
-            <td>
-                <img src="images/Task 6/cube 5.png" align="middle" width="400px"/>
-                <figcaption align="middle">Cube after 3 loop subdivisions<em>./dae/cube.dae</em>.</figcaption>
-            </td>
-        </tr>
-    </table>
-</div>
+
+<p>In the above renderings of the banana and building, we can see clear differences between the number of samples used for each pixel. Especially in the outer regions where there are no objects, rather than use 2048 rays per pixel, we are now only using 32 rays per pixel. The pixels that correspond to more detail or vary more in exposure to lighting converge more slowly and require more samples.</p>
 
 
 </body>
