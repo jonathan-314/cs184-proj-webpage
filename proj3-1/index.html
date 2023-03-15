@@ -141,7 +141,7 @@
     <figcaption align="middle"><em>Wall-E: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/wall-e.dae</em>.</figcaption>
 </div>
 
-<p>The images below show only direct and indirect lighting for the bunny scene. </p>
+<p>The images below show only direct and indirect lighting for the bunny scene. Direct lighting looks more normal than indirect lighting, since indirect lighting ignores the light that hits the pixel where the camera is pointing at. However, if you add the two, you should get the regular scene. </p>
 <div align="middle">
     <table>
         <tr>
@@ -157,11 +157,26 @@
 </table>
 </div>
 
+<p>Below, we compare rendered views with max_ray_depth set to 0, 1, 2, 3, and 100. With max ray depth 0, it is just zero bounce illumination, so the only things that are lit up are light sources themselves. With 1, it is the same as part 3, one bounce radiance. As our max ray depth increases, the scene gets brighter and brighter since we add more to our radiances. </p>
+<div align="middle">
+    <table>
+        <tr>
+            <td><img src="images/Task 3/bunny_1024_32_m0.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 0: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+    <td><img src="images/Task 3/bunny_1024_32_m1.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 1: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+</tr>
+<tr>
+            <td><img src="images/Task 3/bunny_1024_32_m2.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 2: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+    <td><img src="images/Task 3/bunny_1024_32_m3.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 3: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+</tr>
+</table>
+<img src="images/Task 3/bunny_1024_32_m100.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 100: dae/sky/CBbunny.dae</em>.</figcaption> 
+</div>
 
-
-
-
-<h2 align="middle">Insert rest of images/commentary here.</h2>
 
 
 
