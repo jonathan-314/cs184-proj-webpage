@@ -1,7 +1,267 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Project 3-2 here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184 Pathtracer 2</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2023</h1>
+<h1 align="middle">Project 3: Pathtracer 2</h1>
+<h2 align="middle">Jonathan Guo, Wentinn Liao, 184jgwl</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>In this project, we implemented reflection and reflaction as well as depth of focus... </p>
+
+
+<h2 align="middle">Part I: Mirror and Glass Materials</h2>
+
+<p>When max ray depth is 0, the only thing we see is the light coming from light sources since this is zero bounce radiance. When we increase it by 1, the walls are lit up, but not the ceiling since it can't reach the light with one additional bounce. For the mirror sphere, we see the reflection of everything in the previous image, which is just the light. For the glass sphere, we see some reflection of everything in the previous image, as well as refraction, but in this case refraction hasn't had anything yet so it's still black. </p>
+
+<p>When max ray depth goes up to 2, we see the mirror sphere still reflects the previous image with max ray depth 1. We can see the reflection of the cornell box and the other sphere. For the glass sphere, it is still the same as the previous image because the rays that were refracted have not a chance to exit the sphere yet which means there's no color/radiance. When max ray depth goes up to 3, we see the mirror sphere still reflects the previous image with max ray depth 2. We can see that the ceiling in this reflection is lit up now. For the glass sphere, the refracted rays have finally had a chance to exit the sphere, which means the refraction is working. </p>
+
+<div align="middle">
+	<table>
+		<tr>
+			<td>
+    <img src="images/Task 1/spheres_0.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Spheres: 256 samples per pixel, 4 per light, max ray depth 0; dae/sky/CBspheres.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 1/spheres_1.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Spheres: 256 samples per pixel, 4 per light, max ray depth 1; dae/sky/CBspheres.dae</em>.</figcaption></td>
+</tr>
+<tr>
+			<td>
+    <img src="images/Task 1/spheres_2.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Spheres: 256 samples per pixel, 4 per light, max ray depth 2; dae/sky/CBspheres.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 1/spheres_3.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Spheres: 256 samples per pixel, 4 per light, max ray depth 3; dae/sky/CBspheres.dae</em>.</figcaption></td>
+</tr>
+<tr>
+			<td>
+    <img src="images/Task 1/spheres_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Spheres: 256 samples per pixel, 4 per light, max ray depth 4; dae/sky/CBspheres.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 1/spheres_5.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Spheres: 256 samples per pixel, 4 per light, max ray depth 5; dae/sky/CBspheres.dae</em>.</figcaption></td>
+</tr>
+<tr>
+			<td>
+    <img src="images/Task 1/spheres_100.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Spheres: 256 samples per pixel, 4 per light, max ray depth 100; dae/sky/CBspheres.dae</em>.</figcaption></td>
+</tr>
+</table>
+</div>
+
+
+<h2 align="middle">Part II: Bounding Volume Hierarchy</h2>
+
+<p>Our Bounding Volume Hierarchy construction algorithm took the longest side of the box and split the objects by the midpoint of that side. It terminated if the all of the primitives were on one side of the midpoint. Although this is not ideal, in practice it almost always does not occur until the very end when there are very few primitives left. </p>
+
+<div align="middle">
+	<img src="images/Task 2/cow.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>dae/meshedit/cow.dae</em>.</figcaption></td>
+</div>
+<div align="middle">
+	<img src="images/Task 2/maxplanck.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>dae/meshedit/maxplanck.dae</em>.</figcaption></td>
+</div>
+<div align="middle">
+	<img src="images/Task 2/CBlucy.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>dae/sky/CBlucy.dae</em>.</figcaption></td>
+</div>
+
+
+<h2 align="middle">Part III: Direct Illumination</h2>
+
+<p>The direct lighting function with uniform hemispheric sampling treats all samples identically. For each sample, we sample a random vector in a <strong>z</strong>-positive hemisphere. Because this is <strong>z</strong>-positive with respect to the object, this is the incoming direction in the object space, <strong>w_in_o</strong> which is translated to the incoming direction in the world space <strong>w_in_w</strong> using <strong>o2w</strong>. We then use the BVH data structure to compute the first intersection of the uniformly sampled ray with an object, denoted <strong>incoming_isect</strong>, and obtain its emitted radiance. We then multiply by the BSDF at the camera ray intersection with the outgoing ray to the camera and the incoming ray from the emitting object and cosine of the incoming angle and add to a cumulative sum of radiance. Finally, we divide by the uniform PDF (or multiply by <strong>2 pi</strong>, and divide by the total number of samples.</p>
+
+<div align="middle">
+    <img src="images/Task 3/Uniform Hemispheric Sampling.png" align="middle" width="400px"/>
+    <figcaption align="middle">Bunny Uniform Hemispheric Sampling at Rate 32.</figcaption>
+</div>
+
+<p>Importance lighting sampling iterates over each light for <strong>ns_area_light</strong> except for delta lights for which we only sample once. Calling <strong>sample_L</strong> from the light data structure gives the incoming direction in the world space, distance to the light, the PDF, and the radiance itself. The incoming ray is translated to object space and the ray is clipped to the time to the light so the BVH structure can be used to check for intersections with any other objects. If there is no intersection, then the same lighting equation is used, where the radiance is multiplied by the BSDF at the pixel intersection, the cosine of the incoming angle, and divided by the PDF and number of samples. The difference here is that we are keeping track of a sum where PDFs are non-uniform, and the number of samples across lights are different. We cannot make the same assumptions as before that allow us to optimize by doing multiplications at the end, so importance sampling does so properly during the loop.</p>
+
+<div align="middle">
+    <img src="images/Task 3/Importance Lighting Sampling.png" align="middle" width="400px"/>
+    <figcaption align="middle">Bunny Importance Lighting at Rate 32.</figcaption>
+</div>
+
+<p>Lighting sampling is a form of importance sampling in which we sample with higher probability the rays that will contribute the most to the integral. Intuitively in this case, the rays that have been determined to "contribute the most" are ones that point to a light source. Particularly in this case, we are choosing to sample from a close-to-uniform distribution in the solid angle of rays to each light source, and zero distribution elsewhere. In effect, rather than integrating over the entire hemisphere, we are summing integrations over only solid angle regions that correspond to light sources. Because the number of samples remains the same, we are redirecting all samples to regions we know have a higher chance of reflecting light, which significantly improves the quality of the rendering. In general, importance sampling might not explicitly exclude particular regions of the integral, but in can be interpreted to be, with higher probability, allocating more samples to regions of greater or explicit interest to better estimate their integrals.</p>
+
+<p>Shown below are images of a corner of the bunny in which soft shadows are sampled at a single ray per pixel, and at sampling rates of 1, 4, 16, and 64 respectively. We can see that the lower sampling rates are significantly more noisy. This is expected because the concept of soft shadow is centered on pixels at similar positions varying in shading not due to differences in distance or angles, but due to varying amounts of occlusion in lighting. With lower samples, the variation in occlusion is much less fine grained since averaging over fewer samples produces a higher variance estimate. For example, at a sampling rate of 1, all pixels within the shadow of the bunny now have shading that is binary, determined by whether a single random ray hits the bunny or not, which gives it the noisy appearance. As the number of samples increases, the average becomes a much more consistent approximation of the exact integral of occlusion per pixel.</p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="images/Task 3/Soft Shadow Rate 1.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Soft shadow with sampling rate of 1.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 3/Soft Shadow Rate 4.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Soft shadow with sampling rate of 4.</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="images/Task 3/Soft Shadow Rate 16.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Soft shadow with sampling rate of 16.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 3/Soft Shadow Rate 64.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Soft shadow with sampling rate of 64.</figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+<h2 align="middle">Part IV: Global Illumination</h2>
+
+<p>Our indirect lighting implementation occurs inside the <strong>at_least_one_bounce_radiance</strong> function, and first checks if the depth is greater than 1, and if not returns the one bounce radiance immediately. Indirect lighting is then computed by the remainder of the function. Using the desired outgoing direction, we sample the bsdf of the given intersection with <strong>sample_f</strong> to obtain the BSDF, PDF, and the sampled incoming ray, which is denoted by <strong>next_d_in_o</strong>, which occurs in the object space. This incoming direction is translated to world space with <strong>o2w</strong> and along with the hit point is used to construct the next ray. The new ray's depth is decremented once from the given ray.</p>
+
+<p>With Russian Roulette implementation, we go on the conditions that the Bernoulli random variable comes up heads, or 1, and the newly constructed ray intersects at least one object. Because the coin flip is much faster, it is checked first, and the intersection is checked second with the BVH data structure. Finally, indirect lighting is calculated by recursively calling <strong>at_least_one_bounce_radiance</strong> on the new ray and inew intersection point, with the sampled BSDF and <strong>next_d_in_o</strong> as incoming angle, and the added term is divided by the PDF, and the continuation probability, in order to maintain the same expected outcome. The recursive call makes sense because all indirect lighting occurs from a combination of direct and indirect lighting (at least one bounce) at other places that reflect back to the point of interest.</p>
+
+<p>Also, below are some images rendered at 1024 samples per pixel and 32 samples per light using global illumination.</p>
+<div align="middle">
+    <img src="images/Task 3/bench_1024_32.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bench: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/bench.dae</em>.</figcaption>
+</div>
+<div align="middle">
+    <img src="images/Task 3/blob_1024_32.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Blob: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/blob.dae</em>.</figcaption>
+</div>
+<div align="middle">
+    <img src="images/Task 3/wall-e_1024_32.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Wall-E: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/wall-e.dae</em>.</figcaption>
+</div>
+
+<p>The images below show only direct and indirect lighting for the bunny scene. Direct lighting looks more normal than indirect lighting, since indirect lighting ignores the light that hits the pixel where the camera is pointing at. However, if you add the two, you should get the regular scene. </p>
+<div align="middle">
+    <table>
+        <tr>
+            <td>
+                <img src="images/Task 3/bunny_1024_32_direct.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/CBbunny.dae</em>.</figcaption>
+</td>
+<td>
+    <img src="images/Task 3/bunny_1024_32_indirect.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, indirect lighting: dae/sky/CBbunny.dae</em>.</figcaption>
+</td>
+</tr>
+</table>
+</div>
+
+<p>Below, we compare rendered views with max_ray_depth set to 0, 1, 2, 3, and 100. With max ray depth 0, it is just zero bounce illumination, so the only things that are lit up are light sources themselves. With 1, it is the same as part 3, one bounce radiance. As our max ray depth increases, the scene gets brighter and brighter since we add more to our radiances. </p>
+<div align="middle">
+    <table>
+        <tr>
+            <td><img src="images/Task 3/bunny_1024_32_m0.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 0: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+    <td><img src="images/Task 3/bunny_1024_32_m1.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 1: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+</tr>
+<tr>
+            <td><img src="images/Task 3/bunny_1024_32_m2.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 2: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+    <td><img src="images/Task 3/bunny_1024_32_m3.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 3: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+</tr>
+</table>
+<img src="images/Task 3/bunny_1024_32_m100.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 100: dae/sky/CBbunny.dae</em>.</figcaption> 
+</div>
+
+
+
+
+<p>Shown below are renderings of the dragon with global illumination and ray-per-pixel sampling rates in powers of 2, scaling up to 1024. Global illumination makes the image much brighter due to self-reflectance, and scaling up to 1024 rays per pixel gives the rendering solid definition.</p>
+
+<div align="middle">
+    <table>
+        <tr>
+            <td> <img src="images/Task 3/dragon_1_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 1 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+    <td> <img src="images/Task 3/dragon_2_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 2 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+</tr>
+<tr>
+            <td> <img src="images/Task 3/dragon_4_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 4 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+    <td> <img src="images/Task 3/dragon_8_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 8 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+</tr>
+<tr>
+            <td> <img src="images/Task 3/dragon_16_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 16 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+    <td> <img src="images/Task 3/dragon_64_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 64 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
+</tr>
+</table>
+<img src="images/Task 3/dragon_1024_4.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: sample rate 1024 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> 
+</div>
+
+
+<h2 align="middle">Part V: Adaptive Sampling</h2>
+
+<p>Adaptive sampling is a performance optimization that empirically checks for convergence to determine whether more rays need to be sampled for that pixel. In general, the pixel will converge early if the contours around the point of intersection are relatively flat, facing the camera, meaning most generated rays intersect scene in roughly the same way. In contrast, surfaces that face diagonally or near perpendicular to the camera vary significantly even with small deviations in the rays, meaning that averaging many rays is required to accurately estimate the pixel shading.</p>
+
+<p>Our implementation keeps a running sum of the illuminance and illuminance squared, denoted <strong>s1</strong> and <strong>s2</strong> respectively. The check for convergence is done at the beginning, where the counting index <strong>n</strong> also represents the number of samples counted. If it is both greater than zero, a multiple of the number of samples per batch, and satisfies the convergence requirements, then we break the loop. To minimize the number of computations, we rearrange the equation to <strong>n * s2 &#8804 ((n - 1) * c - 1) * s1&#178</strong> where <strong>c</strong> is a precomputed constant <strong>(maxTolerance / 1.96)&#178</strong> which is an equivalent and much faster check for convergence. Finally, rather than dividing by <strong>num_samples</strong>, we divide by <strong>n</strong> and record that as the true number of samples.</p>
+
+<div align="middle">
+    <table style="width=100%">
+        <tr>
+            <td>
+                <img src="images/Task 5/banana.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Rendering of banana with adaptive sampling.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 5/banana_rate.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Sampling rates with adaptive sampling.</figcaption>
+            </td>
+        </tr>
+        <br>
+        <tr>
+            <td>
+                <img src="images/Task 5/building.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Rendering of building with adapative sampling.</figcaption>
+            </td>
+            <td>
+                <img src="images/Task 5/building_rate.png" align="middle" width="300px" style="margin: 20px"/>
+                <figcaption align="middle">Sampling rates with adaptive sampling.</figcaption>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<p>In the above renderings of the banana and building, we can see clear differences between the number of samples used for each pixel. Especially in the outer regions where there are no objects, rather than use 2048 rays per pixel, we are now only using 32 rays per pixel. The pixels that correspond to more detail or vary more in exposure to lighting converge more slowly and require more samples.</p>
+
+
+</body>
 </html>
