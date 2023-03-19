@@ -82,83 +82,48 @@
 
 <p>The pinhole model assumes no reflective nor refractive material between the camera and the scene, and therefore all rays that sample a point must travel directly from the camera to the scene. However, for a thin lens model, light can refract from the scene through the lens to the camera, which means the scene at the camera is now an integral over many different rays. When an object is at the point of focus, this can be seen as an average of views of the object at different angles. However when the object is not in focus, then the rays converge either in front or behind the object, which causes the pixel to produce an average of the scene in near proximity of the object. This produces a blur of objects that are further away from the focal distance.</p>
 
+<p>The photos below all have 256 samples per pixel, 4 per light, and aperture width 0.23. 
 <div align="middle">
-    <img src="images/Task 3/bench_1024_32.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Bench: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/bench.dae</em>.</figcaption>
-</div>
-<div align="middle">
-    <img src="images/Task 3/blob_1024_32.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Blob: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/blob.dae</em>.</figcaption>
-</div>
-<div align="middle">
-    <img src="images/Task 3/wall-e_1024_32.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Wall-E: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/wall-e.dae</em>.</figcaption>
-</div>
-
-<p>The images below show only direct and indirect lighting for the bunny scene. Direct lighting looks more normal than indirect lighting, since indirect lighting ignores the light that hits the pixel where the camera is pointing at. However, if you add the two, you should get the regular scene. </p>
-<div align="middle">
-    <table>
-        <tr>
-            <td>
-                <img src="images/Task 3/bunny_1024_32_direct.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, direct lighting: dae/sky/CBbunny.dae</em>.</figcaption>
-</td>
-<td>
-    <img src="images/Task 3/bunny_1024_32_indirect.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, indirect lighting: dae/sky/CBbunny.dae</em>.</figcaption>
-</td>
+	<table>
+		<tr>
+			<td>
+    <img src="images/Task 4/dragon_d_3.65.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: depth 3.65; dae/sky/CBdragon.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 4/dragon_d_3.98.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: depth 3.98; dae/sky/CBdragon.dae</em>.</figcaption></td>
+</tr>
+<tr>
+			<td>
+    <img src="images/Task 4/dragon_d_4.22.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: depth 4.22; dae/sky/CBdragon.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 4/dragon_d_5.08.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: depth 5.08; dae/sky/CBdragon.dae</em>.</figcaption></td>
 </tr>
 </table>
 </div>
 
-<p>Below, we compare rendered views with max_ray_depth set to 0, 1, 2, 3, and 100. With max ray depth 0, it is just zero bounce illumination, so the only things that are lit up are light sources themselves. With 1, it is the same as part 3, one bounce radiance. As our max ray depth increases, the scene gets brighter and brighter since we add more to our radiances. </p>
+<p>The photos below all have 256 samples per pixel, 4 per light, and focal depth 3.98.  
 <div align="middle">
-    <table>
-        <tr>
-            <td><img src="images/Task 3/bunny_1024_32_m0.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 0: dae/sky/CBbunny.dae</em>.</figcaption> </td>
-    <td><img src="images/Task 3/bunny_1024_32_m1.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 1: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+	<table>
+		<tr>
+			<td>
+    <img src="images/Task 4/dragon_b_0.16.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: aperture 0.16; dae/sky/CBdragon.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 4/dragon_b_0.24.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: aperture 0.24; dae/sky/CBdragon.dae</em>.</figcaption></td>
 </tr>
 <tr>
-            <td><img src="images/Task 3/bunny_1024_32_m2.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 2: dae/sky/CBbunny.dae</em>.</figcaption> </td>
-    <td><img src="images/Task 3/bunny_1024_32_m3.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 3: dae/sky/CBbunny.dae</em>.</figcaption> </td>
+			<td>
+    <img src="images/Task 4/dragon_b_0.32.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: aperture 0.32; dae/sky/CBdragon.dae</em>.</figcaption></td>
+    <td>
+    <img src="images/Task 4/dragon_b_0.40.png" align="middle" width="400px"/>
+    <figcaption align="middle"><em>Dragon: aperture 0.40; dae/sky/CBdragon.dae</em>.</figcaption></td>
 </tr>
 </table>
-<img src="images/Task 3/bunny_1024_32_m100.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Bunny: sample rate 1024 per pixel, 32 per light, max ray depth 100: dae/sky/CBbunny.dae</em>.</figcaption> 
-</div>
-
-
-
-
-<p>Shown below are renderings of the dragon with global illumination and ray-per-pixel sampling rates in powers of 2, scaling up to 1024. Global illumination makes the image much brighter due to self-reflectance, and scaling up to 1024 rays per pixel gives the rendering solid definition.</p>
-
-<div align="middle">
-    <table>
-        <tr>
-            <td> <img src="images/Task 3/dragon_1_4.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Dragon: sample rate 1 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
-    <td> <img src="images/Task 3/dragon_2_4.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Dragon: sample rate 2 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
-</tr>
-<tr>
-            <td> <img src="images/Task 3/dragon_4_4.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Dragon: sample rate 4 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
-    <td> <img src="images/Task 3/dragon_8_4.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Dragon: sample rate 8 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
-</tr>
-<tr>
-            <td> <img src="images/Task 3/dragon_16_4.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Dragon: sample rate 16 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
-    <td> <img src="images/Task 3/dragon_64_4.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Dragon: sample rate 64 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> </td>
-</tr>
-</table>
-<img src="images/Task 3/dragon_1024_4.png" align="middle" width="400px"/>
-    <figcaption align="middle"><em>Dragon: sample rate 1024 per pixel, 4 per light: dae/sky/dragon.dae</em>.</figcaption> 
 </div>
 
 
