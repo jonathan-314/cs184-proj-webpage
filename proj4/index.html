@@ -274,7 +274,21 @@
 <h2 align="middle">Part V: Cloth Sim</h2>
 
 <p>A shader program...</p>
-<p>The Blinn-Phong model accounts for diffusion lighting and specular reflection... </p>
+<p>The Blinn-Phong model accounts for diffuse lighting and specular reflection (as well as ambient light). Diffuse light is when the incoming light ray is spread equally throughout the hemisphere. Specular reflection is when the incoming light ray is concentrated near the mirror reflection. For different materials, there can be different coefficients to control the relative and absolute power of those lightings. Ambient light is just light coming from the environment. </p>
+<p>Below are four pictures using the various components of the Blinn-Phong model. 
+<div align="middle">
+	<table>
+		<tr>
+			<td><img src="images/Task 5/phong_ambient.png" width="500px"><figcaption align="middle">Ambient light with cloth on sphere</figcaption></td>
+			<td><img src="images/Task 5/phong_diffuse.png" width="500px"><figcaption align="middle">Diffuse reflection with cloth on sphere</figcaption></td>
+		</tr>
+		<tr>
+			<td><img src="images/Task 5/phong_specular.png" width="500px"><figcaption align="middle">Specular reflection with cloth on sphere</figcaption></td>
+			<td><img src="images/Task 5/phong_all.png" width="500px"><figcaption align="middle">Blinn-Phong with cloth on sphere</figcaption></td>
+		</tr>
+	</table>
+</div>
+
 <p>Here is the texture mapping shader using our own custom texture</p>
 <p>Here is the bump mapping on the cloth and the sphere. </p>
 <p>Below is the mirror shader on the cloth and the sphere. </p>
