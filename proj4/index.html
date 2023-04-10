@@ -273,7 +273,7 @@
 
 <h2 align="middle">Part V: Cloth Sim</h2>
 
-<p>A shader program...</p>
+<p>A shader program runs a stage of the graphics pipeline. They are useful because they can be run independently on different parts of the scene, allowing for parallelism. They can also be optimized to run on GPUs instead of CPUs to further increase the speed. Vertex shaders compute the positions (and other attributes like tangent, normal, etc) of the vertices parts of the scene, and then these positions and other attributes are passed to fragment shaders, which compute the color. By varying coefficients, we can use vertex and fragment shaders to create lighting and material effects. </p>
 <p>The Blinn-Phong model accounts for diffuse lighting and specular reflection (as well as ambient light). Diffuse light is when the incoming light ray is spread equally throughout the hemisphere. Specular reflection is when the incoming light ray is concentrated near the mirror reflection. For different materials, there can be different coefficients to control the relative and absolute power of those lightings. Ambient light is just light coming from the environment. </p>
 <p>Below are four pictures using the various components of the Blinn-Phong model. 
 <div align="middle">
@@ -293,7 +293,37 @@
 <div align="middle">
 	<img src="images/Task 5/texture.png" width="500px"><figcaption align="middle">Texture mapping with custom texture</figcaption>
 </div>
-<p>Here is the bump mapping on the cloth and the sphere. </p>
+<p>Here is the bump and displacement mapping on the cloth and the sphere. We used texture 3 for this. </p>
+<div align="middle">
+	<img src="images/Task 5/displacement_sphere.png" width="500px"><figcaption align="middle">Displacement mapping on sphere</figcaption>
+</div>
+<div align="middle">
+	<table>
+		<tr>
+			<td><img src="images/Task 5/bump_sphere.png" width="500px"><figcaption align="middle">Bump mapping on sphere</figcaption>
+			</td>
+			<td><img src="images/Task 5/bump_cloth.png" width="500px"><figcaption align="middle">Bump mapping on cloth on sphere</figcaption>
+			</td>
+		</tr>
+	</table>
+</div>
+<p>Below, we compare the displacement and bump mapping with differing resolutions. We can see that in the higher resolution one, the displacements more closely match the texture, because of the higher resolution; the lower resolution one, the displacements are match with the average of the texture over a larger area. For bumps, there is very little difference because the vertices are not displaced. </p>
+<div align="middle">
+	<table>
+		<tr>
+			<td><img src="images/Task 5/displacement_16.png" width="500px"><figcaption align="middle">Displacement mapping on sphere, 16</figcaption>
+			</td>
+			<td><img src="images/Task 5/displacement_128.png" width="500px"><figcaption align="middle">Displacement mapping on cloth on sphere, 128</figcaption>
+			</td>
+		</tr>
+		<tr>
+			<td><img src="images/Task 5/bump_16.png" width="500px"><figcaption align="middle">Bump mapping on sphere, 16</figcaption>
+			</td>
+			<td><img src="images/Task 5/bump_128.png" width="500px"><figcaption align="middle">Bump mapping on cloth on sphere, 128</figcaption>
+			</td>
+		</tr>
+	</table>
+</div>
 <p>Below is the mirror shader on the cloth and the sphere. </p>
 <div align="middle">
 	<table>
