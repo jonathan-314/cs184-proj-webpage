@@ -149,7 +149,7 @@
 
 <h2 align="middle">Part III: Handling collisions with other objects</h2>
 
-<p>Shown below is the sphere scene with k_s = 500, 5000, and 50000, respectively. </p>
+<p>Shown below is the sphere scene with k_s = 500, 5000, and 50000, respectively. The differences are that springs with lower k_s are more stretchy than springs with higher k_s, causing the cloth to be more stretchy. This is because lower k_s means lower force when you pull on the spring, which means it is more stretchy. </p>
 
 <div align="middle">
 	<img src="images/Task 3/sphere_500.png" align="middle" width="500px">
@@ -172,7 +172,7 @@
 </div>
 
 
-<h2 align="middle">Part IV: Depth of Field</h2>
+<h2 align="middle">Part IV: Self Collisions</h2>
 
 <p>Shown below is a progression of how the cloth falls when self-collision is taken into account. As opposed to self-intersecting, it folds neatly over itself in a somewhat zig-zag manner, with deviation due to randomness. It is notable that it takes quite a while in order to stop moving fully. This is because when the point-masses are moving slowly, damping does little to change the amount of energy the system actually has, and friction is not present so the cloth continues to move.</p>
 
